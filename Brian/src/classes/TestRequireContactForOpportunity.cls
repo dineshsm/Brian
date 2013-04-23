@@ -1,0 +1,74 @@
+/**
+ * This class contains unit tests for validating the behavior of Apex classes
+ * and triggers.
+ *
+ * Unit tests are class methods that verify whether a particular piece
+ * of code is working properly. Unit test methods take no arguments,
+ * commit no data to the database, and are flagged with the testMethod
+ * keyword in the method definition.
+ *
+ * All test methods in an organization are executed whenever Apex code is deployed
+ * to a production organization to confirm correctness, ensure code
+ * coverage, and prevent regressions. All Apex classes are
+ * required to have at least 75% code coverage in order to be deployed
+ * to a production organization. In addition, all triggers must have some code coverage.
+ * 
+ * The @isTest class annotation indicates this class only contains test
+ * methods. Classes defined with the @isTest annotation do not count against
+ * the organization size limit for all Apex scripts.
+ *
+ * See the Apex Language Reference for more information about Testing and Code Coverage.
+ */
+@isTest
+private class TestRequireContactForOpportunity {
+
+    static testMethod void myUnitTest() {
+    /*	
+    	//create Account
+        Account myAccount = new Account (name='XYZ Organization');
+        myAccount.BillingCountry = 'Ireland';
+        insert myAccount;
+    	
+    	//create Campaign
+        Campaign myCampaign = new Campaign(name='XYZ Campaign');
+        myCampaign.Type = 'Advertisement';
+        insert myCampaign;
+        
+        // create an opportunity
+        Opportunity myOpportunity = new Opportunity(name='XYZ Opp', 
+                                           Account=myAccount,
+                                           StageName='First Appointment',
+                                           Campaign=myCampaign,
+                                           CloseDate = date.today(),
+                                           Deal_Type__c = 'New Business',
+                                           Interest_Driver__c = 'Product replacement');                                        
+        //Save it
+        insert myOpportunity ;
+         
+        //Edit it and try to save.. get error
+        try{
+        	List<Opportunity> savedOpp = [SELECT Service_Order_Number__c FROM Opportunity WHERE name = 'XYZ Opp'];
+        	savedOpp[0].Service_Order_Number__c = '1234567';
+        	update savedOpp;
+        	
+        }catch(DMLException  e){
+ 			System.assert(e.getMessage().contains('You must add at least 1 Contact Role'));
+        	//System.assertEquals('You must add at least 1 Contact Role', savedOpp.getError() );
+        }
+        
+        
+        Contact mycontact = new Contact (lastName='XYZ Contact',Contact_Status__c = 'Active');
+        mycontact.account = myAccount;
+        insert mycontact;
+
+        //add contact role
+        OpportunityContactRole cr = new OpportunityContactRole(opportunityId=myOpportunity.id,contactId=mycontact.id,role='Business User');
+        insert cr;
+        
+        
+        // edit and save
+        List<Opportunity> savedOpp = [SELECT Service_Order_Number__c FROM Opportunity WHERE name = 'XYZ Opp'];
+        savedOpp[0].Service_Order_Number__c = '1234567';
+        update savedOpp;*/
+    }
+}

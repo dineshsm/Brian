@@ -1,0 +1,3 @@
+<apex:page standardController="Case">
+<apex:iframe id="jiraSearchCase" src="http://jira.esearch.intra/plugins/servlet/crmSearch?salesforce-multi-case-with-case-number={!$CurrentPage.parameters.id}"></apex:iframe>
+</apex:page>

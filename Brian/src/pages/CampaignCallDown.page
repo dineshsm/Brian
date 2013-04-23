@@ -1,0 +1,141 @@
+<apex:page controller="CampaignCallDownController"> 
+<apex:includeScript value="{!URLFOR($Resource.jquery, 'js/jquery-1.6.2.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.jquery, 'js/jquery-ui-1.8.16.custom.min.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.jquery, 'css/ui-lightness/jquery-ui-1.8.16.custom.css')}"/> 
+<script type="text/javascript">
+    var j$ = jQuery.noConflict();
+    function doDate() {     
+        j$('input').filter('.datepickerclass').datepicker({ dateFormat: 'dd-mm-yy' });
+    }
+    
+    function showMyDialog(obj, id){
+    	var myDiv = document.getElementById("dialog"+id);
+    	j$(myDiv).dialog({ autoOpen: false });
+    	j$(myDiv).dialog('open');    	
+    	return false;
+	}
+</script>
+  <apex:sectionHeader title="Call Down List" />
+  <apex:form id="calls">
+    <apex:pageBlock >
+        <apex:outputPanel layout="block">
+            <apex:selectList value="{!campcat}" size="1" >Campaign Category:
+                <apex:selectOptions value="{!campaignCategoryValue}"/>
+                <apex:actionSupport event="onchange" status="counterStatus"  action="{!campaignRefresh2}" rerender="calls, campaignDetails, callList" />
+            </apex:selectList>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" id="campaignDetails" >
+            <apex:selectList value="{!camp}" size="1">Campaign:
+                <apex:selectOptions value="{!campaignItems}"/>
+                <apex:actionSupport event="onchange" status="counterStatus" action="{!campaignRefresh1}" rerender="calls, status, callList, owners, goToCampaign"/>
+            </apex:selectList>&nbsp;&nbsp;
+                <apex:outputLink id="goToCampaign" value="/{!camp}" >Go to Campaign</apex:outputLink>
+        </apex:outputPanel>    
+    </apex:pageBlock>
+    
+    <apex:pageBlock >
+        <apex:outputPanel layout="block">
+            <apex:outputText >Status:</apex:outputText>
+            <apex:selectList value="{!status}" size="1">
+                <apex:selectOptions value="{!statusItems}"/>
+                <apex:actionSupport event="onchange" status="counterStatus" action="{!campaignRefresh}" rerender="calls"/>
+            </apex:selectList>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block">
+            <apex:outputText >Owner:</apex:outputText>
+            <apex:selectList value="{!ownerId}" size="1">
+                <apex:selectOptions value="{!owners}"/>
+                <apex:actionSupport event="onchange" status="counterStatus" action="{!campaignRefresh}" rerender="callList"/>
+            </apex:selectList>
+        </apex:outputPanel>
+        <apex:outputPanel layout="block" style="position: relative; width: 100%">
+            <apex:outputPanel layout="block" style="float: left;">
+                <apex:outputLink value="{!backRef}" style="line-height: 24px;">Settings</apex:outputLink>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" style="float: right; padding-right: 5px; padding-bottom: 5px">
+                <apex:commandButton action="{!updateAll}" value="Update All"  status="counterStatus"/>
+            </apex:outputPanel>
+            <apex:outputPanel layout="block" style="clear: both;">
+            </apex:outputPanel>
+        </apex:outputPanel>
+                    <apex:outputPanel >
+                        <apex:pageMessages />
+                    </apex:outputPanel>
+           <apex:actionStatus id="counterStatus">
+              <apex:facet name="start">  
+                <apex:outputPanel id="processing">
+                  <!-- apex:pageMessage title="Processing..." severity="info" strength="2" rendered="true" / -->
+                  <p><apex:image id="loader" url="{!URLFOR($Resource.CampaignCallDown, '/images/loaderImage.gif')}"/></p>
+                </apex:outputPanel>
+              </apex:facet>
+              <apex:facet name="stop">
+                    <apex:pageBlockTable value="{!leadPlusTasks}" var="lpt" id="callList">   
+                    <apex:column headerValue="Owner" rendered="{!$Setup.CampaignColumns__c.OWNER__c}">
+                        	<apex:outputText value="{!lpt.ownerFirstName} {!lpt.ownerLastName}" escape="false"/><br/>
+                        </apex:column>
+                        <apex:column >
+                            <apex:facet name="header"><apex:commandLink action="{!sortByName}" Value="Name"/></apex:facet>
+                            <apex:outputLink value="/{!lpt.ID}">{!lpt.NAME}</apex:outputLink><br/>
+                            <a href="#" onclick="showMyDialog(this, '{!lpt.ID}');">click for more info.. </a>
+                        	 <div id="dialog{!lpt.ID}" title="{!lpt.NAME}" style="display:none"><p><b>Title:</b>{!lpt.TITLE}</p><p><b>Address:</b><apex:outputText value="{!lpt.Address}" escape="false"/></p><p><b>Email:</b><apex:outputText value="{!lpt.EMAIL}" escape="false"/></p><p><b>Last Three Completed Tasks:</b></p><p>--------------------------------</p><p><apex:outputText value="{!lpt.lastThreeTasks}" escape="false"/></p></div> 
+                        </apex:column>
+                        <apex:column value="{!lpt.COMPANY}" rendered="{!$Setup.CampaignColumns__c.COMPANY__c}">
+                            <apex:facet name="header">
+                                <apex:commandLink action="{!sortByCompany}" Value="Company" rerender="calls"/>
+                            </apex:facet>
+                        </apex:column>        
+                        <apex:column value="{!lpt.PHONE}" headerValue="Phone" rendered="{!$Setup.CampaignColumns__c.PHONE__c}"/>
+                                               
+                        <apex:column >
+                            <apex:facet name="header" >
+                                <apex:commandLink action="{!sortByStatus}" Value="Member Status"/>
+                            </apex:facet>
+                            <apex:selectList value="{!lpt.statusUpdate}" size="1" id="memStatus">
+                            <apex:selectOptions value="{!lpt.memStatusValue}"/>
+                            <apex:actionSupport event="onchange" rerender="calls"/>
+                            </apex:selectList>
+                        </apex:column>
+                        <apex:column headerValue="Rejection Reason" >
+                            <apex:outputText value="N/A" rendered="{!lpt.cORl == 'contact'}"/>
+                            <apex:selectList value="{!lpt.REJECTIONREASON}" size="1" rendered="{!lpt.cORl == 'lead'}">
+                            <apex:selectOptions value="{!rejectionReasonValue}"/>
+                            </apex:selectList><apex:outputText style="color:#FF0000;font-weight:bold;" value="{!lpt.errorMessage}"  rendered="{!lpt.cORl == 'lead'}"/>
+                        </apex:column>
+                        <apex:column headerValue="Log A Call">
+                            <apex:selectList value="{!lpt.t.Subject}" size="1" value="{!lpt.selectedSubject}">
+                                <apex:selectOptions value="{!taskSubjectValue}"/>
+                            </apex:selectList><apex:outputText style="color:#FF0000;font-weight:bold;" value="{!lpt.taskErrorMessage}"  rendered="{!lpt.t.Description != ''}"/><br />
+                            <apex:inputTextarea value="{!lpt.t.Description}" cols="25" rows="1" onFocus="this.rows=3;" onBlur="this.rows=1" />
+                        </apex:column> 
+                        <apex:column headerValue="Schedule Next Call">
+                             <apex:inputText styleClass="datepickerclass" value="{!lpt.scheduleCallDate}"/>
+                              <script>doDate();</script>
+                        </apex:column>
+                        <apex:column >
+                        	<apex:facet name="header" >
+                                <apex:commandLink action="{!sortByTaskDate}" Value="Next Task Date"/>
+                            </apex:facet>
+                        	<apex:outputText value="{!lpt.nextTaskDate}" escape="false"/>
+                        </apex:column>
+                        
+                   		<apex:facet name="footer">
+							<apex:outputPanel >
+								<apex:outputText value="({!paginator.recordCount} Results) Page {!paginator.pageNumberDisplayFriendly} of {!paginator.pageCount} "/>
+								<apex:outputPanel >    </apex:outputPanel>
+								<apex:commandLink value="Previous" action="{!paginator.previous}"
+									rendered="{!IF(paginator.hasPrevious,'true','false')}"/>
+								<apex:outputText value="Previous" rendered="{!IF(NOT(paginator.hasPrevious),'true','false')}"/>
+								<apex:outputPanel > | </apex:outputPanel>
+								<apex:commandLink value="Next" action="{!paginator.next}"
+									rendered="{!IF(paginator.hasNext,'true','false')}"/>
+								<apex:outputText value="Next" rendered="{!IF(NOT(paginator.hasNext),'true','false')}"/>
+							</apex:outputPanel>
+						</apex:facet>       
+                        </apex:pageBlockTable>            
+                   </apex:facet>
+                  
+                  </apex:actionStatus>
+  </apex:pageBlock>
+  </apex:form>
+
+</apex:page>

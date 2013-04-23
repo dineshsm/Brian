@@ -1,0 +1,77 @@
+<apex:page >
+<!--- Web to Lead Validation Script--->
+<script language="JavaScript" type="text/javascript">
+function checkform ( form )
+{
+if (form.first_name.value == "") {
+alert( "Please enter the first name." );
+form.first_name.focus();
+return false ;
+}
+if (form.last_name.value == "") {
+alert( "Please enter the last name." );
+form.last_name.focus();
+return false ;
+}
+if (form.email.value == "") {
+alert( "Please enter the correct email address." );
+form.email.focus();
+return false ;
+}
+if (form.country.value == "") {
+alert( "Please enter the country." );
+form.phone.focus();
+return false ;
+}
+return true ;
+}
+
+</script>
+<!--- End Web to Lead Validation Script--->
+ <!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <META> element to your page <HEAD>.      -->
+<!--  If necessary, please modify the charset parameter to specify the        -->
+<!--  character set of your HTML page.                                        -->
+<!--  ----------------------------------------------------------------------  -->
+
+<META HTTP-EQUIV='Content-type' CONTENT='text/html; charset=UTF-8'/>
+
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: Please add the following <FORM> element to your page.             -->
+<!--  ----------------------------------------------------------------------  -->
+<apex:pageBlock >
+            
+<apex:pageBlockSection columns="1" title="Create a Lead">
+<form action='https://www.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8' method='POST' onsubmit="return checkform(this);">
+
+<input type='hidden' name='oid' value='00D20000000CDBf'/>
+<input type='hidden' name='retURL' value='https://emea.salesforce.com/apex/pages/Create_Lead?thankyou=Your Lead Has been submitted'/>
+<table>
+<!--  ----------------------------------------------------------------------  -->
+<!--  NOTE: These fields are optional debugging elements.  Please uncomment   -->
+<!--  these lines if you wish to test in debug mode.                          -->
+<!--  <input type='hidden' name='debug' value=1>                              -->
+<!--  <input type='hidden' name='debugEmail'                                  -->
+<!--  value='ssheehan@newsweaver.com'>                                        -->
+<!--  ----------------------------------------------------------------------  -->
+<tr><td colspan='2'>{!$CurrentPage.parameters.thankyou}</td></tr>
+<tr><td><label for='first_name'>First Name</label></td><td><div class="requiredInput"><div class="requiredBlock"></div><input  id='first_name' maxlength='40' name='first_name' size='20' type='text' /></div><br/></td></tr>
+<tr><td><label for='last_name'>Last Name</label></td><td><div class="requiredInput"><div class="requiredBlock"></div><input  id='last_name' maxlength='80' name='last_name' size='20' type='text' /></div><br/></td></tr>
+<tr><td><label for='email'>Email</label></td><td><div class="requiredInput"><div class="requiredBlock"></div><input  id='email' maxlength='80' name='email' size='20' type='text' /></div><br/></td></tr>
+
+<tr><td><label for='company'>Company</label></td><td><div><input  id='company' maxlength='40' name='company' size='20' type='text' /></div><br/></td></tr>
+
+<tr><td><label for='country'>Country</label></td><td><div class="requiredInput"><div class="requiredBlock"></div><input  id='country' maxlength='40' name='country' size='20' type='text' /></div><br/></td></tr>
+
+<tr><td><label for='phone'>Phone</label></td><td><div><input  id='phone' maxlength='40' name='phone' size='20' type='text' /></div><br/></td></tr>
+
+<tr><td><label for='description'>Description</label></td><td><textarea name='description' cols='50' rows='10'></textarea><br/></td></tr>
+<tr><td colspan='2'><input type='submit' name='submit' value='Create Lead'/></td></tr>
+</table>
+
+</form>
+            
+</apex:pageBlockSection>
+</apex:pageBlock>
+
+</apex:page>

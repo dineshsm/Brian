@@ -1,0 +1,4 @@
+<apex:page standardController="Account">
+
+<iframe id="jiraSearch" onLoad="searchUrl();" src="http://jira.esearch.intra/plugins/servlet/crmSearch?salesforce-multi-account={!account.ID}" width="100%" frameborder="0"></iframe>
+</apex:page>
